@@ -133,9 +133,18 @@ class Local implements AdapterInterface
      * @author Verdient。
      */
     #[Override]
-    public function publicUrl(string $location, ?Options $options = null): string
+    public function publicUrl(string $location): string
     {
         throw new BadFunctionCallException('Local adapter does not support publicUrl method');
+    }
+
+    /**
+     * @author Verdient。
+     */
+    #[Override]
+    public function temporaryUrl(string $location, int $expiredAt, ?Options $options = null): string
+    {
+        throw new BadFunctionCallException('Local adapter does not support temporaryUrl method');
     }
 
     /**

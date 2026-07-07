@@ -189,13 +189,26 @@ class Filesystem
      * 获取公共访问地址
      *
      * @param string $location 位置
+     *
+     * @author Verdient。
+     */
+    public static function publicUrl(string $location): string
+    {
+        return static::default()->publicUrl($location);
+    }
+
+    /**
+     * 获取临时访问地址
+     *
+     * @param string $location 位置
+     * @param int $expiredAt 过期时间
      * @param ?Options $options 选项
      *
      * @author Verdient。
      */
-    public static function publicUrl(string $location, ?Options $options = null): string
+    public static function temporaryUrl(string $location, int $expiredAt, ?Options $options = null): string
     {
-        return static::default()->publicUrl($location, $options);
+        return static::default()->temporaryUrl($location, $expiredAt, $options);
     }
 
     /**

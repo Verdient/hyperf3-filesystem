@@ -230,6 +230,15 @@ class OSS implements AdapterInterface
     #[Override]
     public function publicUrl(string $location, ?Options $options = null): string
     {
+        return $this->filesystem->publicUrl($location);
+    }
+
+    /**
+     * @author Verdient。
+     */
+    #[Override]
+    public function temporaryUrl(string $location, int $expiredAt, ?Options $options = null): string
+    {
         $config = [];
 
         if (!$options) {
@@ -248,7 +257,9 @@ class OSS implements AdapterInterface
 
         $uri2 = Uri::new($this->filesystem->publicUrl('/'));
 
-        return Uri::new($this->filesystem->temporaryUrl($location, new DateTime('+1 day'), $config))
+        $dateTime = DateTime::createFromFormat('U', (string) $expiredAt);
+
+        return Uri::new($this->filesystem->temporaryUrl($location, $dateTime, $config))
             ->withScheme($uri2->getScheme())
             ->withUserInfo($uri2->getUsername(), $uri2->getPassword())
             ->withHost($uri2->getHost())

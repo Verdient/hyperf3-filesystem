@@ -107,11 +107,21 @@ interface AdapterInterface
      * 获取公共访问地址
      *
      * @param string $location 位置
+     *
+     * @author Verdient。
+     */
+    public function publicUrl(string $location): string;
+
+    /**
+     * 获取临时访问地址
+     *
+     * @param string $location 位置
+     * @param int $expiredAt 过期时间
      * @param ?Options $options 选项
      *
      * @author Verdient。
      */
-    public function publicUrl(string $location, ?Options $options = null): string;
+    public function temporaryUrl(string $location, int $expiredAt, ?Options $options = null): string;
 
     /**
      * 逐个迭代

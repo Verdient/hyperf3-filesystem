@@ -1,7 +1,7 @@
 {
     "name": "verdient/hyperf3-filesystem",
     "type": "library",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "autoload": {
         "psr-4": {
             "Verdient\\Hyperf3\\Filesystem\\": "src"
