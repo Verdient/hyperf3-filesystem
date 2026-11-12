@@ -7,6 +7,7 @@ namespace Hyperf\Flysystem\OSS;
 use Hyperf\Support\ResourceGenerator;
 use JetBrains\PhpStorm\ArrayShape;
 use League\Flysystem\Config;
+use League\Flysystem\DirectoryAttributes;
 use League\Flysystem\FileAttributes;
 use League\Flysystem\FilesystemAdapter;
 use League\Flysystem\UnableToReadFile;
@@ -166,7 +167,16 @@ class Adapter implements FilesystemAdapter, TemporaryUrlGenerator
     public function lastModified(string $path): FileAttributes
     {
         $response = $this->client->getObjectMeta($this->bucket, $path);
-        return new FileAttributes($path, null, null, $response['last-modified']);
+        $timestamp = strtotime($response['last-modified']);
+
+        if ($timestamp === false) {
+            throw \League\Flysystem\UnableToRetrieveMetadata::lastModified(
+                $path,
+                'Invalid Last-Modified header'
+            );
+        }
+
+        return new FileAttributes($path, lastModified: $timestamp);
     }
 
     public function fileSize(string $path): FileAttributes
@@ -211,10 +221,7 @@ class Adapter implements FilesystemAdapter, TemporaryUrlGenerator
             $objectList = $res->getObjectList(); // 文件列表
             if ($prefixList) {
                 foreach ($prefixList as $value) {
-                    $result[] = [
-                        'type' => 'dir',
-                        'path' => $value->getPrefix(),
-                    ];
+                    $result[] = new DirectoryAttributes($value->getPrefix());
                     if ($deep) {
                         $result = array_merge($result, $this->listContents($value->getPrefix(), $deep));
                     }
@@ -225,12 +232,11 @@ class Adapter implements FilesystemAdapter, TemporaryUrlGenerator
                     if (($value->getSize() === 0) && ($value->getKey() === $directory . '/')) {
                         continue;
                     }
-                    $result[] = [
-                        'type' => 'file',
-                        'path' => $value->getKey(),
-                        'timestamp' => strtotime($value->getLastModified()),
-                        'size' => $value->getSize(),
-                    ];
+                    $result[] = new FileAttributes(
+                        path: $value->getKey(),
+                        fileSize: (int) $value->getSize(),
+                        lastModified: strtotime($value->getLastModified()) ?: null,
+                    );
                 }
             }
             if ($nextMarker === '') {

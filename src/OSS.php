@@ -7,8 +7,6 @@ namespace Verdient\Hyperf3\Filesystem;
 use DateTime;
 use Hyperf\Filesystem\FilesystemFactory;
 use Iterator;
-use League\Flysystem\DirectoryAttributes;
-use League\Flysystem\FileAttributes;
 use League\Flysystem\Filesystem;
 use League\Uri\Uri;
 use Override;
@@ -273,16 +271,6 @@ class OSS implements AdapterInterface
     #[Override]
     public function each(string $location): Iterator
     {
-        foreach ($this->filesystem->listContents($location) as $item) {
-            if ($item['type'] === 'dir') {
-                yield new DirectoryAttributes($item['path']);
-            } else if ($item['type'] === 'file') {
-                yield new FileAttributes(
-                    path: $item['path'],
-                    fileSize: $item['size'],
-                    lastModified: $item['timestamp']
-                );
-            }
-        }
+        yield from $this->filesystem->listContents($location);
     }
 }
